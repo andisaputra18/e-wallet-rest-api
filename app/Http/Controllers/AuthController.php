@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\BaseController as BaseController;
+use App\Models\Log;
 
 class AuthController extends BaseController
 {
@@ -21,6 +22,11 @@ class AuthController extends BaseController
         if (!$account || !Hash::check($request->password, $account->password)) {
             return $this->sendError('Login Failed!', ["error" => "User unregirestered"], 401);
         } else {
+            $log = new Log;
+            $log->user_id = $account->id;
+            $log->sign_in = 1;
+            $log->save();
+
             $response['id'] = $account->id;
             $response['name'] = $account->name;
             $response['access_token'] = $account->createToken('auth_token')->plainTextToken;
