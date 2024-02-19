@@ -111,4 +111,18 @@ class TransactionController extends BaseController
 
         return response()->json(["message" => "Your withdraw is successfully"]);
     }
+
+    public function top_up_proccess($user_id, $amount)
+    {
+        $check_balance = Balance::where("user_id", $user_id)->first();
+        if (!is_null($check_balance)) {
+            $check_balance->nominal = $check_balance->nominal + $amount;
+            $check_balance->save();
+        } else {
+            $balance = new Balance;
+            $balance->user_id = $user_id;
+            $balance->nominal = $amount;
+            $balance->save();
+        }
+    }
 }
